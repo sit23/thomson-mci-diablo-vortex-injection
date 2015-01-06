@@ -736,12 +736,13 @@ c First introduce the aliasing mask.
 
       kmax = nkx
       kcut2 = kcut*kcut
-      kmask = 8./9.*(kmax+1)**2
+      kmask = 8./9.*(kmax+1)**2 ! They have done [8/9]*(nkx+1)**2, as the number in the round bracket should be the max number of wavemodes in x, which is nkx+1, as all of the fourier sums in x are done from 0 to nkx. 
       dk = kx(2)-kx(1)
 
       do j=0,tnky
          do i=0,nkx
-            temp1 = ksqd(i,j)/dk/dk
+            temp1 = ksqd(i,j)/dk/dk ! Note that all of these calculations for the filter are done with the length dimensions removed. This is worrying if you have L_x \ne L_y, as then you'll think, well i^2 and j^2 don't represent the same wavemodes. But, the good news is that because the wavemodes are calculated by ksqd(i,j)/(dk^2), you will end up with temp1=i^2 + (j^2)*(L_x/L_y)^2. So, even though we are dealing with non-dimensional numbers for calculating distances in wavenumber space, it is still alright, as dividing by dkx^2 means we have re-scaled j^2 correctly.
+            
             if (temp1.ge.kmask) then
                filter(i,j) = 0.
             else
